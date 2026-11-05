@@ -156,7 +156,8 @@ function lessonPage(day, step, celebrate) {
     activity = `
       <div class="writing-heading"><h2 id="activity-title" tabindex="-1">Write on paper</h2>${icon('pen')}</div>
       <p class="prompt">${lesson.writing}</p>
-      <div class="warmup"><strong>A way to start</strong><p class="starter">${lesson.starter}</p><p>${lesson.tip}</p></div>
+      <div data-writing-guide="${day}"></div>
+      <div class="warmup" id="writing-starter" tabindex="-1"><strong>A way to start</strong><p class="starter">${lesson.starter}</p><p>${lesson.tip}</p></div>
       <ol class="writing-steps">
         <li><strong>Say it.</strong> Tell a grown-up your idea.</li>
         <li><strong>Write it.</strong> Pick up your pen and write your idea on paper.</li>
@@ -233,8 +234,10 @@ function review() {
 }
 
 let nextCelebration = null;
+let disposeWritingGuide;
 
 function render({ focus = false } = {}) {
+  disposeWritingGuide?.();
   window.pronunciation?.stop();
   const hash = location.hash || '#home';
   const match = /^#day-([1-7])\/(read|talk-1|talk-2|write|finish)$/.exec(hash);
@@ -256,6 +259,8 @@ function render({ focus = false } = {}) {
   nextCelebration = null;
   main.innerHTML = `<p id="storage-message" class="storage-message" role="status" ${storageAvailable ? 'hidden' : ''}>This browser couldn’t save your practice. Keep this tab open to use it for this visit.</p>${content}`;
   window.pronunciation?.decorate(main);
+  const writingGuide = main.querySelector('[data-writing-guide]');
+  disposeWritingGuide = writingGuide ? window.mountWritingGuide?.(writingGuide) : undefined;
   const coachShortcut = main.querySelector('[data-open-coach]');
   if (coachShortcut && window.spellingCoachReady) coachShortcut.hidden = false;
   for (const [id, active] of [['home-link', !reviewPage], ['review-link', reviewPage]]) {

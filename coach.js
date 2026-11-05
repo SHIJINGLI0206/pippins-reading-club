@@ -264,7 +264,7 @@
     if (shortcut) openCoach(shortcut);
   });
   document.addEventListener('click', event => {
-    if (event.target.closest('[data-speech-text]')) cancelListening();
+    if (event.target.closest('[data-speech-text], [data-guide]')) cancelListening();
   }, { capture: true });
   window.addEventListener('pagehide', cancelListening);
   window.addEventListener('hashchange', cancelListening);
