@@ -10,6 +10,7 @@
   const form = document.querySelector('#coach-form');
   const input = document.querySelector('#coach-input');
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const deviceVoice = window.pippinDeviceVoice;
   const pronunciation = window.pronunciation;
   const homophones = [
     { sea: 'the ocean', see: 'look with your eyes' },
@@ -43,6 +44,7 @@
   let returnFocus;
   let recognition;
   let localLanguage;
+  let useDeviceVoice = !Recognition;
 
   if (Recognition?.available) {
     Promise.all(['en-NZ', 'en-AU'].map(async lang => {
@@ -147,10 +149,17 @@
     return true;
   }
 
-  function listeningUI(listening) {
+  function listeningUI(listening, label = listening ? 'Stop listening' : 'Talk to Pippin') {
     microphone.setAttribute('aria-pressed', String(listening));
     microphone.disabled = false;
-    micLabel.textContent = listening ? 'Stop listening' : 'Talk to Pippin';
+    micLabel.textContent = label;
+  }
+
+  function endRequest(request) {
+    if (recognition !== request) return false;
+    recognition = null;
+    listeningUI(false);
+    return true;
   }
 
   function cancelListening() {
@@ -167,7 +176,7 @@
     panel.hidden = false;
     launcher.setAttribute('aria-expanded', 'true');
     layout.classList.add('coach-open');
-    (Recognition ? microphone : input).focus();
+    (microphone.hidden ? input : microphone).focus();
   }
 
   function closeCoach() {
@@ -177,6 +186,94 @@
     launcher.setAttribute('aria-expanded', 'false');
     layout.classList.remove('coach-open');
     (returnFocus?.isConnected ? returnFocus : launcher).focus();
+  }
+
+  function startDeviceListening() {
+    useDeviceVoice = true;
+    listeningUI(true, 'Opening microphone…');
+    microphone.disabled = true;
+    status.textContent = 'Starting on-device listening…';
+    const request = deviceVoice.capture({
+      onListening() {
+        if (recognition !== request) return;
+        listeningUI(true, 'Done speaking');
+        status.textContent = 'Say your word, then tap Done speaking.';
+      },
+      onProcessing(warmedUp) {
+        if (recognition !== request) return;
+        listeningUI(false, 'Working out the word…');
+        microphone.disabled = true;
+        status.textContent = warmedUp
+          ? 'Pippin is working out your word…'
+          : 'Pippin is getting the voice files and checking your word. The first try takes longer.';
+      },
+    });
+    recognition = request;
+    request.result.then(text => {
+      if (!endRequest(request)) return;
+      if (text) respond([text], true);
+      else status.textContent = 'Pippin didn’t hear a word. Try again.';
+    }).catch(error => {
+      if (!endRequest(request)) return;
+      if (['NotAllowedError', 'SecurityError'].includes(error.name)) {
+        status.textContent = 'Allow microphone access for this site, or use keyboard dictation below.';
+      } else if (['NotFoundError', 'NotReadableError'].includes(error.name)) {
+        status.textContent = 'Pippin couldn’t open the microphone. Check that it is connected and available.';
+      } else {
+        status.textContent = 'On-device voice couldn’t finish. Try again or use keyboard dictation below.';
+      }
+    });
+  }
+
+  function startBrowserListening() {
+    const request = new Recognition();
+    request.lang = localLanguage || 'en-NZ';
+    if (localLanguage && 'processLocally' in request) request.processLocally = true;
+    request.maxAlternatives = 4;
+    request.interimResults = false;
+    request.continuous = false;
+    let results = [];
+    let tryDevice = false;
+
+    request.onstart = () => {
+      if (recognition === request) status.textContent = 'Listening… say your word.';
+    };
+    request.onresult = event => {
+      results = Array.from(event.results[event.resultIndex], result => result.transcript);
+    };
+    request.onerror = event => {
+      if (recognition !== request) return;
+      if (deviceVoice && !['not-allowed', 'no-speech'].includes(event.error)) {
+        tryDevice = true;
+        status.textContent = 'Switching to on-device listening…';
+        return;
+      }
+      endRequest(request);
+      if (event.error === 'not-allowed') {
+        status.textContent = 'Allow microphone access for this site, or use keyboard dictation below.';
+      } else if (event.error === 'no-speech') {
+        status.textContent = 'Pippin didn’t hear a word. Try again.';
+      } else {
+        status.textContent = 'This browser’s speech service is unavailable. Use keyboard dictation below.';
+      }
+    };
+    request.onend = () => {
+      if (!endRequest(request)) return;
+      if (tryDevice) startDeviceListening();
+      else if (results.length) respond(results, true);
+      else status.textContent = 'Pippin didn’t hear a word. Try again.';
+    };
+
+    recognition = request;
+    listeningUI(true);
+    status.textContent = 'Opening the microphone…';
+    try {
+      request.start();
+    } catch (error) {
+      endRequest(request);
+      if (deviceVoice && error.name !== 'NotAllowedError') startDeviceListening();
+      else status.textContent = 'Pippin couldn’t open the microphone. Try keyboard dictation below.';
+    }
   }
 
   function startListening() {
@@ -192,56 +289,11 @@
       return;
     }
     pronunciation?.stop();
-
-    const request = new Recognition();
-    request.lang = localLanguage || 'en-NZ';
-    if (localLanguage && 'processLocally' in request) request.processLocally = true;
-    request.maxAlternatives = 4;
-    request.interimResults = false;
-    request.continuous = false;
-    let results = [];
-
-    function endRequest() {
-      if (recognition !== request) return false;
-      recognition = null;
-      listeningUI(false);
-      return true;
-    }
-
-    request.onstart = () => {
-      if (recognition === request) status.textContent = 'Listening… say your word.';
-    };
-    request.onresult = event => {
-      results = Array.from(event.results[event.resultIndex], result => result.transcript);
-    };
-    request.onerror = event => {
-      if (!endRequest()) return;
-      if (['not-allowed', 'service-not-allowed', 'audio-capture'].includes(event.error)) {
-        status.textContent = 'The microphone is unavailable. Try keyboard dictation or type below.';
-      } else if (event.error === 'no-speech') {
-        status.textContent = 'Pippin didn’t hear a word. Try again.';
-      } else {
-        status.textContent = 'Voice input didn’t work this time. Try again or use the box below.';
-      }
-    };
-    request.onend = () => {
-      if (!endRequest()) return;
-      if (results.length) respond(results, true);
-      else status.textContent = 'Pippin didn’t hear a word. Try again.';
-    };
-
-    recognition = request;
-    listeningUI(true);
-    status.textContent = 'Opening the microphone…';
-    try {
-      request.start();
-    } catch {
-      endRequest();
-      status.textContent = 'Voice input couldn’t start. Try keyboard dictation or type below.';
-    }
+    if (useDeviceVoice) startDeviceListening();
+    else startBrowserListening();
   }
 
-  if (Recognition) {
+  if (Recognition || deviceVoice) {
     microphone.addEventListener('click', startListening);
   } else {
     microphone.hidden = true;
