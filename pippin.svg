@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 344" role="img" aria-labelledby="title">
+  <title id="title">Pippin, a fluffy kiwi reading a book in a leafy nest</title>
+  <defs>
+    <linearGradient id="fluff" x2=".8" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#ce996e"/>
+      <stop offset=".55" stop-color="#ad744e"/>
+      <stop offset="1" stop-color="#754831"/>
+    </linearGradient>
+    <radialGradient id="face">
+      <stop stop-color="#dfa879"/>
+      <stop offset="1" stop-color="#b58058"/>
+    </radialGradient>
+    <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
+      <path d="M4 6q2-2 4-1m5 7 2-1M4 16l2-1" fill="none" stroke="#fff8e7" stroke-opacity=".23" stroke-width="1.4" stroke-linecap="round"/>
+    </pattern>
+    <path id="body" d="M173 262c-22-12-36-38-37-66l-7 2 7-13-6-5 10-9-5-8 12-7-5-8 12-5-2-9 14-3 2-9 14-1 4-9 17 2 9-9 15 6 12-6 11 7 14-3 9 9 11-1 7 10 10 1 4 12 10 5-1 10c17 29 10 78-24 101-33 22-84 23-117 3z"/>
+    <path id="head" d="M213 141q-9-21-4-42l-7-5 11-8-4-7 12-5 1-9 15-1 7-7 11 4 13-4 11 6 11 1 4 8 11 4-1 8 11 7-3 9q11 19-2 44-16 25-47 22-38-4-50-25z"/>
+  </defs>
+  <path d="M49 271q-19-18-9-38 7-16 34-24-13-34 16-48 14-7 37-1-8-34 25-47 24-10 54 1 19-32 58-33 48-1 68 31 44-16 70 8 19 17 11 44 34 1 47 28 11 22-6 39 24 16 8 40z" fill="#fff8e8" opacity=".67"/>
+  <ellipse cx="256" cy="276" rx="201" ry="46" fill="#b3c290"/>
+  <ellipse cx="255" cy="278" rx="167" ry="24" fill="#79895f" opacity=".25"/>
+  <g fill="none" stroke="#738961" stroke-width="4" stroke-linecap="round">
+    <path d="M118 270q-26-32-32-69m42 69q-42-22-74-14m330 13q29-44 42-66m-46 72q43-18 68-15"/>
+  </g>
+  <g fill="#769260">
+    <path d="M95 228q-25-7-23-30 22 6 23 30m8 18q-24 0-34-18 23-3 34 18m3 3q-2-26 15-32 5 20-15 32m-18 9q-20 10-35-3 17-9 35 3"/>
+    <path d="M408 230q-9-20 3-32 11 17-3 32m-10 16q17-22 37-15-13 16-37 15m17-29q0-22 19-26-1 20-19 26m9 45q14-14 33-6-15 12-33 6"/>
+  </g>
+  <g fill="#ffe8a6">
+    <path d="m99 126 3 8 8 3-8 3-3 8-3-8-8-3 8-3zm289 24 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/>
+    <circle cx="137" cy="110" r="3"/><circle cx="367" cy="111" r="4"/>
+  </g>
+  <g fill="none" stroke="#97734b" stroke-linecap="round">
+    <path d="M118 268q47 27 144 28 92 0 139-29M139 285q49 22 124 20 76-2 113-23M154 276l-30-9m218 28 35-12" stroke-width="7"/>
+    <path d="M133 279q53 26 127 23 76 0 129-26m-220 24 24 6m119-3 28-9" stroke="#c1a373" stroke-width="3"/>
+  </g>
+  <use href="#body" fill="url(#fluff)"/><use href="#body" fill="url(#dots)"/>
+  <path d="M186 183q-18 20-5 42 9 17 34 16 14-9 7-23-12-23-36-35z" fill="#98613f"/>
+  <path d="M187 195q5 5 8 5m-11 5q4 5 9 5m-2 7 9 4m-2 8 9 2" fill="none" stroke="#d49c6e" stroke-width="3" stroke-linecap="round"/>
+  <use href="#head" fill="url(#face)"/><use href="#head" fill="url(#dots)"/>
+  <path d="M304 114q30 10 59 53 6 11-2 10-24-31-62-48z" fill="#ebbe77" stroke="#93633f" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M305 125q32 15 53 43" fill="none" stroke="#b7824d" stroke-width="1.6"/>
+  <ellipse cx="282" cy="102" rx="9" ry="10" fill="#33241b"/>
+  <circle cx="285" cy="99" r="3.2" fill="#fff9eb"/>
+  <path d="M269 87q8-6 15-2" fill="none" stroke="#805237" stroke-width="3.2" stroke-linecap="round"/>
+  <ellipse cx="285" cy="121" rx="10" ry="5" fill="#ea9c87" opacity=".65"/>
+  <path d="M208 253q-4 16 1 22m43-18q0 12 6 20m-49-2q-10-2-15 2m15-2q7-2 12 2m37 0q-8-1-12 3m12-3q7-2 13 1" fill="none" stroke="#5e4b39" stroke-width="5" stroke-linecap="round"/>
+  <path d="M249 215q33-18 69 4 23-22 56-23l-10 59q-26-1-49 16-28-20-66-15z" fill="#547c65" stroke="#365744" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M252 208q34-13 66 8 24-23 53-24l-10 55q-25 1-45 17-29-17-60-15z" fill="#fff2d6" stroke="#a48864" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="m318 216-2 48m-50-39q21-3 40 9m-39 0q20-2 39 9m22-12q12-13 29-16m-29 24q13-11 27-15" fill="none" stroke="#bfa581" stroke-width="2" stroke-linecap="round"/>
+  <path d="M229 231q8-11 23-11 11 2 6 14-8 13-22 13z" fill="#ac754f"/>
+  <path d="M383 279h.1m25-8h.1m-299 10h.1m-42-11h.1" stroke="#e4e6b9" stroke-width="5" stroke-linecap="round"/>
+</svg>
