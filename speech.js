@@ -53,7 +53,7 @@ function addSpeakers(root) {
 function stopPronunciation() {
   audioStatus.textContent = '';
   if (!playback) return;
-  playback.button.setAttribute('aria-pressed', 'false');
+  playback.button?.setAttribute('aria-pressed', 'false');
   playback = null;
   synthesizer.cancel();
 }
@@ -68,12 +68,8 @@ function pronunciationVoice() {
   return english.find(item => item.default) || english[0];
 }
 
-document.addEventListener('click', event => {
-  const button = event.target.closest('button[data-speech-text]');
-  if (!button) return;
-  event.preventDefault();
-
-  const wasPlaying = playback?.button === button;
+function pronounce(text, button = null) {
+  const wasPlaying = button && playback?.button === button;
   stopPronunciation();
   if (wasPlaying) return;
   if (!synthesizer || !window.SpeechSynthesisUtterance) {
@@ -81,17 +77,17 @@ document.addEventListener('click', event => {
     return;
   }
 
-  const utterance = new SpeechSynthesisUtterance(button.dataset.speechText);
+  const utterance = new SpeechSynthesisUtterance(text);
   const voice = pronunciationVoice();
   if (voice) utterance.voice = voice;
   utterance.lang = voice?.lang.replace('_', '-') || 'en-NZ';
   utterance.rate = 0.86;
   playback = { utterance, button };
-  button.setAttribute('aria-pressed', 'true');
+  button?.setAttribute('aria-pressed', 'true');
 
   function finish(failed = false) {
     if (playback?.utterance !== utterance) return;
-    button.setAttribute('aria-pressed', 'false');
+    button?.setAttribute('aria-pressed', 'false');
     playback = null;
     if (failed) audioStatus.textContent = 'Audio couldn’t play. Check that this device has an English speech voice.';
   }
@@ -103,7 +99,14 @@ document.addEventListener('click', event => {
   } catch {
     finish(true);
   }
+}
+
+document.addEventListener('click', event => {
+  const button = event.target.closest('button[data-speech-text]');
+  if (!button) return;
+  event.preventDefault();
+  pronounce(button.dataset.speechText, button);
 });
 
 window.addEventListener('pagehide', stopPronunciation);
-window.pronunciation = { decorate: addSpeakers, stop: stopPronunciation };
+window.pronunciation = { decorate: addSpeakers, stop: stopPronunciation, speak: pronounce, speaker };

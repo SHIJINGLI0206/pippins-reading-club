@@ -250,3 +250,81 @@ main.frame { min-height: 65vh; }
   .print-notes .observations { display: flex; gap: .5rem 1rem; flex-wrap: wrap; }
   .print-note { white-space: pre-wrap; overflow-wrap: anywhere; }
 }
+
+.coach-launcher {
+  position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 3; border-radius: 999px; background: #f8e3b0; border-color: #b89d61; color: #3d452e;
+  box-shadow: 0 4px 0 #b89d6150, 0 8px 22px #332c1e20;
+}
+.coach-launcher:hover { background: #f6d997; }
+.coach-launcher[aria-expanded="true"] { display: none; }
+.coach-launcher svg, .coach-mic svg { flex: 0 0 22px; width: 22px; height: 22px; }
+.writing-coach { border-color: #d1b676; background: #fbf1d4; }
+.writing-coach:hover { background: #fae9bc; }
+.coach {
+  position: fixed; z-index: 3; right: max(.75rem, env(safe-area-inset-right));
+  bottom: max(.75rem, env(safe-area-inset-bottom)); width: min(368px, calc(100% - 1.5rem));
+  max-height: 80vh; max-height: min(80dvh, 43rem); overflow: auto; overscroll-behavior: contain;
+  background: var(--white); border: 1px solid #cbd5bf; border-radius: 20px; box-shadow: 0 14px 42px #293b2c2b;
+}
+.coach-header {
+  display: flex; gap: .55rem; align-items: center; padding: .75rem; background: #e9efdb;
+  position: sticky; top: 0; z-index: 1; border-bottom: 1px solid #dbe4ca;
+}
+.coach-header img { flex: 0 0 46px; width: 46px; height: 40px; object-fit: cover; object-position: 50% 75%; }
+.coach-header h2 { margin-top: .13rem; font-size: clamp(1.25rem, 4vw, 1.65rem); }
+.coach-header .eyebrow { font-size: .64rem; }
+.coach-close {
+  flex: 0 0 44px; width: 44px; height: 44px; margin-left: auto; padding: 0; border: 1px solid #c9d6bf;
+  border-radius: 12px; color: #365641; background: var(--white); font-size: 1.65rem; line-height: 1;
+}
+.coach-close:hover { background: #edf1e5; }
+.coach-body { display: grid; gap: .7rem; padding: .9rem; }
+.coach-intro { padding: .6rem .7rem; background: #eef2e5; border-radius: 12px; font-weight: 650; }
+.coach-mic { width: 100%; }
+.coach-mic[aria-pressed="true"] { background: #8a433c; box-shadow: 0 3px 0 #6e332d; }
+.coach-mic:disabled { cursor: wait; }
+.coach-status { color: var(--quiet); font-size: .9rem; }
+.coach-status:empty, #coach-reply:empty { display: none; }
+.coach-form label { display: block; margin-bottom: .3rem; font-size: .84rem; font-weight: 700; }
+.coach-form > div { display: flex; gap: .35rem; }
+.coach-form input {
+  flex: 1; width: 0; min-width: 0; padding: .55rem; border: 1px solid #b7c3ae;
+  border-radius: 9px; background: #fff; color: var(--ink);
+}
+.coach-form button { padding-inline: .75rem; }
+.coach-privacy { font-size: .75rem; line-height: 1.4; color: var(--quiet); }
+.coach-flashcard {
+  text-align: center; padding: .8rem .55rem; border: 2px solid #d3b96f; border-radius: 15px;
+  background: linear-gradient(155deg, #fff6da, #f9eac0); box-shadow: inset 0 0 0 4px #fff9e5;
+}
+.coach-flashcard .eyebrow { color: #6f5528; }
+.coach-word {
+  margin-block: .45rem; font-size: clamp(2.5rem, 12vw, 3.4rem); line-height: 1.16; font-weight: 800;
+  letter-spacing: -.035em; overflow-wrap: anywhere; scroll-margin-top: 6rem;
+}
+.coach-word-long { font-size: clamp(1.85rem, 8vw, 2.35rem); }
+.coach-copy { color: #514730; font-size: .84rem; font-weight: 700; }
+.coach-choice-prompt { font-weight: 750; scroll-margin-top: 6rem; }
+.coach-choices { display: grid; gap: .4rem; margin-top: .45rem; }
+.coach-choice {
+  display: grid; gap: .15rem; text-align: left; padding: .5rem .7rem; min-height: 44px;
+  border: 1px solid #cbd5bf; border-radius: 10px; background: #f1f5eb; color: var(--ink);
+}
+.coach-choice strong { font-size: 1.14rem; }
+.coach-choice span { color: var(--quiet); font-size: .85rem; }
+.coach-choice:hover { background: #e6eedc; }
+.coach-other { margin-top: .45rem; font-size: .85rem; }
+.coach-other summary { padding-block: .35rem; cursor: pointer; }
+@media (min-width: 1050px) {
+  .page-layout.coach-open {
+    display: grid; grid-template-columns: minmax(0, 1fr) 344px; gap: clamp(1rem, 2vw, 1.75rem);
+    width: min(calc(100% - 3rem), 1460px); margin-inline: auto;
+  }
+  .coach-open > main { width: 100%; }
+  .coach { position: sticky; align-self: start; top: 1rem; right: auto; bottom: auto; margin-top: 2rem; width: 100%; }
+}
+@media print {
+  .coach, .coach-launcher, .writing-coach { display: none !important; }
+  .page-layout.coach-open { display: block; width: auto; }
+}

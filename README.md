@@ -9,3 +9,5 @@ To publish on GitHub Pages, open the repository’s **Settings → Pages**, sele
 The site saves progress and optional notes in browser local storage. Clearing that storage removes the records. Notes and handwriting stay with the family. The Review page includes a printable summary.
 
 Speaker buttons use the browser’s text-to-speech voices. New Zealand English is preferred when available. Open **Hear a word** under a passage to listen to individual words.
+
+**Spell with Pippin** accepts spoken words or short spelling questions and displays a flashcard. The microphone uses browser speech recognition and prefers installed on-device New Zealand or Australian English recognition when available. Otherwise the browser may use an online voice service. The site keeps requests in the open page only. Keyboard dictation and typed input also work.

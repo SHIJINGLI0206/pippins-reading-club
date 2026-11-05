@@ -149,6 +149,7 @@ function lessonPage(day, step, celebrate) {
         <li><strong>Write it.</strong> Pick up your pen and write your idea on paper.</li>
         <li><strong>Read it back.</strong> Check capitals, spaces and full stops.</li>
       </ol>
+      <button class="button secondary writing-coach" type="button" data-open-coach hidden>Ask Pippin for spelling help</button>
       <div class="actions"><button class="button primary" data-next="finish" data-mark="write">I’ve written on paper <span aria-hidden="true">→</span></button>
       <a class="button secondary" href="${base}talk-2">Back</a></div>`;
   }
@@ -243,6 +244,8 @@ function render({ focus = false } = {}) {
   nextCelebration = null;
   main.innerHTML = `<p id="storage-message" class="storage-message" role="status" ${storageAvailable ? 'hidden' : ''}>This browser couldn’t save your practice. Keep this tab open to use it for this visit.</p>${content}`;
   window.pronunciation?.decorate(main);
+  const coachShortcut = main.querySelector('[data-open-coach]');
+  if (coachShortcut && window.spellingCoachReady) coachShortcut.hidden = false;
   for (const [id, active] of [['home-link', !reviewPage], ['review-link', reviewPage]]) {
     const link = document.getElementById(id);
     if (active) link.setAttribute('aria-current', 'page');

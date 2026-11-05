@@ -7,10 +7,11 @@
   <meta name="description" content="Seven little reading and writing adventures with Pippin the kiwi.">
   <title>Pippin’s Reading Club</title>
   <link rel="icon" href="./pippin.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=2">
+  <link rel="stylesheet" href="./style.css?v=3">
   <script defer src="./lessons.js"></script>
-  <script defer src="./speech.js"></script>
-  <script defer src="./app.js?v=2"></script>
+  <script defer src="./speech.js?v=3"></script>
+  <script defer src="./app.js?v=3"></script>
+  <script defer src="./coach.js"></script>
 </head>
 <body>
   <a class="skip" href="#main" id="skip">Skip to content</a>
@@ -26,9 +27,41 @@
       </nav>
     </div>
   </header>
-  <main class="frame" id="main" tabindex="-1">
-    <noscript>Turn on JavaScript to open the lessons and save your practice.</noscript>
-  </main>
+  <div class="page-layout" id="page-layout">
+    <main class="frame" id="main" tabindex="-1">
+      <noscript>Turn on JavaScript to open the lessons and save your practice.</noscript>
+    </main>
+    <aside class="coach" id="spelling-coach" aria-labelledby="coach-title" hidden>
+      <header class="coach-header">
+        <img src="./pippin.svg" alt="" width="64" height="44">
+        <div><p class="eyebrow">YOUR WORD HELPER</p><h2 id="coach-title">Spell with Pippin</h2></div>
+        <button class="coach-close" type="button" aria-label="Close spelling helper">×</button>
+      </header>
+      <div class="coach-body">
+        <div class="coach-intro">
+          <p data-say>Say a word, or ask “How do I spell playground?”</p>
+        </div>
+        <button class="button primary coach-mic" id="coach-mic" type="button" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11v1a7 7 0 0 0 14 0v-1m-7 8v3m-3 0h6"/></svg>
+          <span id="coach-mic-label">Talk to Pippin</span>
+        </button>
+        <p class="coach-status" id="coach-status" role="status"></p>
+        <div id="coach-reply"></div>
+        <form class="coach-form" id="coach-form">
+          <label for="coach-input">Or use keyboard dictation or type</label>
+          <div>
+            <input id="coach-input" name="word" type="text" maxlength="120" autocomplete="off" spellcheck="false" enterkeyhint="go" placeholder="A word or short phrase" required>
+            <button class="button secondary" type="submit">Show</button>
+          </div>
+        </form>
+        <p class="coach-privacy">Your browser may use an online service for voice input. The club doesn’t save your requests.</p>
+      </div>
+    </aside>
+  </div>
+  <button class="button coach-launcher" id="coach-launcher" type="button" aria-controls="spelling-coach" aria-expanded="false" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11a7 7 0 0 1-7 7H9l-5 3v-5a7 7 0 0 1 4-12h6a7 7 0 0 1 7 7Z"/><path d="M8 11h.1m3.9 0h.1m3.9 0h.1" stroke-width="2.5"/></svg>
+    Spell with Pippin
+  </button>
   <p class="audio-status" id="speech-status" role="status"></p>
   <footer class="frame footer"><span data-say>Made for little readers in Aotearoa.</span><span data-say="Read aloud. Talk it through. Write on paper.">Read aloud · Talk it through · Write on paper</span></footer>
 </body>
