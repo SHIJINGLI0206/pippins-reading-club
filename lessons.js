@@ -80,7 +80,7 @@ const lessons = [
   {
     title: 'The Runaway Cap', kind: 'Story', focus: 'sh & ch', art: 'cap', colour: 'peach',
     words: ['chat', 'ship', 'lunch', 'brush'],
-    warmup: 'Look for the sh and ch sounds you practised on Day 1.',
+    warmup: 'Look for the sh and ch sounds you practised in The Wet Bag.',
     text: ['Chip took a red cap to the park. He set it on a bench. A gust of wind blew the cap into a bush. Chip got it back. He put the cap in his bag so the wind could not blow it away again.'],
     questions: [
       ['Where did Chip put the cap first?', 'On a bench.'],
@@ -88,6 +88,6 @@ const lessons = [
     ],
     writing: 'Imagine the wind blows away something you brought to the park. Write two or three sentences about what you brought, what happened and what you did next.',
     starter: 'I took a … to the park.',
-    tip: 'Keep this page with your Day 1 writing so you can look at both together.',
+    tip: 'Keep this page with your writing for The Wet Bag so you can look at both together.',
   },
 ];

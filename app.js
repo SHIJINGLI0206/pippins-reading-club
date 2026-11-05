@@ -4,6 +4,13 @@ const steps = ['Read', 'Talk', 'Write on paper'];
 const skills = ['Reading', 'Talking about the text', 'Writing'];
 const supportLevels = ['On her own', 'With a prompt', 'Together'];
 const conventions = ['Capital letters', 'Spaces', 'Full stops'];
+const practiceMonth = new Intl.DateTimeFormat('en-NZ', { month: 'short', timeZone: 'UTC' });
+const practiceDates = lessons.map((_, index) => {
+  const date = new Date(Date.UTC(2026, 10, 5 + index));
+  const number = date.getUTCDate();
+  const suffix = number % 100 >= 11 && number % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[number % 10] || 'th');
+  return { number, label: `${number}${suffix} ${practiceMonth.format(date)}`, iso: date.toISOString().slice(0, 10) };
+});
 let records = {};
 let storageAvailable = true;
 
@@ -32,18 +39,23 @@ function icon(name, className = '') {
   return `<svg class="${className}" aria-hidden="true"><use href="./art.svg#${name}"></use></svg>`;
 }
 
+function dateLabel(day, className = '') {
+  const { label, iso } = practiceDates[day - 1];
+  return `<time class="${className}" datetime="${iso}">${label}</time>`;
+}
+
 function nest(animate = false) {
   const feathers = lessons.map((_, index) => {
     const day = index + 1;
     const filled = records[day]?.done;
-    return `<span class="feather ${filled ? 'earned' : ''}">${filled ? icon('feather', animate === day ? 'float-in' : '') : day}</span>`;
+    return `<span class="feather ${filled ? 'earned' : ''}" title="${practiceDates[index].label}">${filled ? icon('feather', animate === day ? 'float-in' : '') : practiceDates[index].number}</span>`;
   }).join('');
   return `<div class="nest" aria-hidden="true">${feathers}</div>`;
 }
 
 function status(day) {
   const record = records[day];
-  if (record?.done) return 'Finished';
+  if (record?.done) return 'Completed';
   return record?.started ? 'Started' : 'Ready';
 }
 
@@ -59,29 +71,30 @@ function home() {
   const started = Object.keys(records)
     .filter(day => records[day]?.started && !records[day].done)
     .sort((a, b) => records[b].updated - records[a].updated)[0];
-  const next = started || lessons.findIndex((_, index) => !records[index + 1]?.done) + 1;
+  const next = Number(started) || lessons.findIndex((_, index) => !records[index + 1]?.done) + 1;
+  const nextDate = practiceDates[next - 1]?.label;
   return `
     <section class="hero">
       <div class="hero-copy">
         <span class="eyebrow">A LITTLE ADVENTURE EVERY DAY</span>
         <h1>Pippin’s<br> Reading Club</h1>
         <p>Read with a fluffy friend, talk about what you find, and make up something of your own.</p>
-        <a class="button primary" href="${next ? lessonLink(Number(next)) : '#review'}" data-say>${started ? `Keep going · Day ${next}` : next ? `Start Day ${next}` : 'Visit your feather nest'} <span aria-hidden="true">→</span></a>
+        <a class="button primary" href="${next ? lessonLink(next) : '#review'}" data-say>${started ? `Keep going · ${nextDate}` : next ? `Start ${nextDate}` : 'Visit your feather nest'} <span aria-hidden="true">→</span></a>
       </div>
       <figure class="hero-art"><img src="./pippin.svg" alt="Pippin the fluffy kiwi reading in a leafy nest" width="500" height="344"></figure>
     </section>
     <section class="progress-strip" aria-label="Your feather nest">
-      <div><strong data-say>Your feather nest</strong><p>${completed} of 7 practice days finished</p></div>
+      <div><strong data-say>Your feather nest</strong><p>${completed} of 7 lessons completed</p></div>
       ${nest()}
     </section>
     <section class="week" aria-labelledby="week-title">
-      <div class="section-heading"><div><p class="eyebrow">YOUR READING TRAIL</p><h2 id="week-title">Pick a day</h2></div><p>About 15–20 minutes each</p></div>
+      <div class="section-heading"><div><p class="eyebrow">YOUR READING TRAIL</p><h2 id="week-title">Pick a date</h2></div><p>About 15–20 minutes each</p></div>
       <div class="day-grid">
         ${lessons.map((lesson, index) => {
           const day = index + 1;
           const state = status(day);
           return `<a class="day-card" href="${lessonLink(day)}">
-            <div class="day-art ${lesson.colour}"><span class="day-number">Day ${day}</span>${icon(lesson.art)}</div>
+            <div class="day-art ${lesson.colour}">${dateLabel(day, 'practice-date')}${icon(lesson.art)}</div>
             <div class="day-info"><h3>${lesson.title}</h3><p>${lesson.kind} <span aria-hidden="true">·</span> ${lesson.focus}</p><span class="status ${state.toLowerCase()}">${state}</span></div>
           </a>`;
         }).join('')}
@@ -105,7 +118,7 @@ function lessonPage(day, step, celebrate) {
   if (step === 'finish') {
     return `<section class="finish panel">
       <img src="./pippin.svg" alt="" width="270" height="186">
-      <p class="eyebrow">DAY ${day} FINISHED</p>
+      <p class="eyebrow">${dateLabel(day)} · Completed</p>
       <h1>One more feather!</h1>
       <p>You read, talked and wrote on paper. Thanks for practising with Pippin.</p>
       ${nest(celebrate ? day : false)}
@@ -124,7 +137,7 @@ function lessonPage(day, step, celebrate) {
       <div class="warmup"><h3>Word warm-up</h3>
       <ul class="words">${lesson.words.map(word => `<li>${word}</li>`).join('')}</ul><p>${lesson.warmup}</p></div>
       ${passage(lesson)}
-      <details class="help"><summary>Grown-up help</summary><p>Let the reader try first. If they get stuck, point to the letters, say the sounds and blend them together. Give a tricky word if needed, then reread the sentence. On Days 1 and 7, note how much help the first read took.</p></details>
+      <details class="help"><summary>Grown-up help</summary><p>Let the reader try first. If they get stuck, point to the letters, say the sounds and blend them together. Give a tricky word if needed, then reread the sentence. For the first and last lessons, note how much help the first read took.</p></details>
       <div class="actions"><button class="button primary" data-next="talk-1" data-mark="read">I’ve read it <span aria-hidden="true">→</span></button></div>`;
   } else if (active === 1) {
     const questionIndex = step === 'talk-2' ? 1 : 0;
@@ -156,16 +169,12 @@ function lessonPage(day, step, celebrate) {
 
   return `<div class="lesson-shell" data-day="${day}">
     <a class="back-link" href="#home" data-say="My week">← My week</a>
-    <header class="lesson-banner ${lesson.colour}"><div><p class="eyebrow">DAY ${day} · ${lesson.kind} · ${lesson.focus}</p><h1>${lesson.title}</h1></div>${icon(lesson.art)}</header>
+    <header class="lesson-banner ${lesson.colour}"><div><p class="eyebrow">${dateLabel(day)} · ${lesson.kind} · ${lesson.focus}</p><h1>${lesson.title}</h1></div>${icon(lesson.art)}</header>
     <nav aria-label="Practice steps" class="steps">
       ${steps.map((label, index) => `<a href="${base}${stageLinks[index]}" data-say="${label}" ${index === active ? 'aria-current="step"' : ''}><span>${completed[index] ? '✓' : index + 1}</span>${label}${completed[index] ? '<span class="sr-only"> completed</span>' : ''}</a>`).join('')}
     </nav>
     <section class="panel activity" aria-labelledby="activity-title">${activity}</section>
   </div>`;
-}
-
-function recordDate(record) {
-  return record.started ? new Date(record.started).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 }
 
 function observations(record) {
@@ -195,26 +204,29 @@ function review() {
   const anyNotes = Boolean(records[1]?.support || records[7]?.support);
   return `<div class="review-shell">
     <a class="back-link" href="#home" data-say="My week">← My week</a>
-    <header class="review-banner"><div><p class="eyebrow">YOUR FEATHER NEST</p><h1>My practice review</h1><p>${completed} of 7 days finished. Each feather marks a day you practised.</p></div>${nest()}</header>
+    <header class="review-banner"><div><p class="eyebrow">YOUR FEATHER NEST</p><h1>My practice review</h1><p>${completed} of 7 lessons completed. Each feather marks a day you practised.</p></div>${nest()}</header>
     <section class="review-records" aria-labelledby="record-title">
-      <div class="section-heading"><h2 id="record-title">Day by day</h2><button class="button secondary print-button" type="button" id="print-review" data-say>Print review</button></div>
+      <div class="section-heading"><h2 id="record-title">Practice by date</h2><button class="button secondary print-button" type="button" id="print-review" data-say>Print review</button></div>
       ${lessons.map((lesson, index) => {
         const day = index + 1;
         const record = records[day] || {};
         const done = [record.read, record.talk, record.write].map((item, i) => item ? steps[i] : '').filter(Boolean);
         const state = status(day);
+        const startedDate = record.started ? new Date(record.started).toLocaleDateString('en-NZ', {
+          day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Pacific/Auckland',
+        }) : '';
         return `<article class="review-row">
-          <div class="review-day"><div class="review-icon ${lesson.colour}">${icon(lesson.art)}</div><div><p class="eyebrow">DAY ${day}${record.started ? ` · ${recordDate(record)}` : ''}</p><h3 data-say="Day ${day}. ${escapeText(lesson.title)}."><a href="${lessonLink(day)}">${lesson.title}</a></h3><p>${done.length ? done.join(' · ') : 'No steps recorded yet'}</p></div><span class="status ${state.toLowerCase()}" data-say>${state}</span></div>
+          <div class="review-day"><div class="review-icon ${lesson.colour}">${icon(lesson.art)}</div><div><p class="eyebrow">${dateLabel(day)}</p><h3 data-say="${practiceDates[index].label}. ${escapeText(lesson.title)}."><a href="${lessonLink(day)}">${lesson.title}</a></h3><p>${done.length ? done.join(' · ') : 'No steps recorded yet'}</p>${startedDate ? `<p>Started ${startedDate}</p>` : ''}</div><span class="status ${state.toLowerCase()}" data-say>${state}</span></div>
           <details class="help review-notes"><summary data-say="Grown-up notes">Grown-up notes<span class="notes-indicator">${record.support ? ' · Saved' : ''}</span></summary>${notesForm(day, record)}</details>
           <div class="print-notes">${record.support ? `${observations(record)}${record.note ? `<p class="print-note">${escapeText(record.note)}</p>` : ''}` : ''}</div>
         </article>`;
       }).join('')}
     </section>
     <section class="panel comparison" aria-labelledby="compare-title">
-      <h2 id="compare-title">Day 1 and Day 7</h2>
+      <h2 id="compare-title">${dateLabel(1)} and ${dateLabel(7)}</h2>
       <p>Compare the first read and look at the two paper samples together.</p>
-      <div class="comparison-grid">${[1, 7].map(day => `<section><h3>Day ${day}</h3>${observations(records[day] || {})}</section>`).join('')}</div>
-      <p class="compare-hint" ${anyNotes ? 'hidden' : ''}>Add grown-up notes on either day to start the comparison.</p>
+      <div class="comparison-grid">${[1, 7].map(day => `<section><h3>${dateLabel(day)}</h3>${observations(records[day] || {})}</section>`).join('')}</div>
+      <p class="compare-hint" ${anyNotes ? 'hidden' : ''}>Add grown-up notes for either date to start the comparison.</p>
     </section>
     <p class="privacy">Progress and notes are saved in this browser. Keep the handwritten pages with you.</p>
   </div>`;
@@ -235,7 +247,7 @@ function render({ focus = false } = {}) {
     const step = match[2] === 'finish' && !record.done ? 'write' : match[2];
     if (!record.started) save(day, { started: Date.now(), updated: Date.now() });
     content = lessonPage(day, step, nextCelebration === day);
-    document.title = `Day ${day} · ${lessons[day - 1].title} | Pippin’s Reading Club`;
+    document.title = `${practiceDates[day - 1].label} · ${lessons[day - 1].title} | Pippin’s Reading Club`;
   } else {
     content = reviewPage ? review() : home();
     document.title = reviewPage ? 'My practice review | Pippin’s Reading Club' : 'Pippin’s Reading Club';

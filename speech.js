@@ -25,7 +25,7 @@ function addSpeakers(root) {
     const wrapper = document.createElement('div');
     wrapper.className = 'audio-card';
     card.before(wrapper);
-    const text = card.querySelector('.day-number').textContent + '. ' +
+    const text = card.querySelector('.practice-date').textContent + '. ' +
       card.querySelector('h3').textContent + '. ' + card.querySelector('.day-info p').textContent + '. ' +
       card.querySelector('.status').textContent + '.';
     wrapper.append(card, speaker(text));
