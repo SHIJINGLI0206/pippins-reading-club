@@ -7,27 +7,29 @@
   <meta name="description" content="Seven little reading and writing adventures with Pippin the kiwi.">
   <title>Pippin’s Reading Club</title>
   <link rel="icon" href="./pippin.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css?v=2">
   <script defer src="./lessons.js"></script>
-  <script defer src="./app.js"></script>
+  <script defer src="./speech.js"></script>
+  <script defer src="./app.js?v=2"></script>
 </head>
 <body>
   <a class="skip" href="#main" id="skip">Skip to content</a>
   <header class="masthead">
     <div class="frame header-inner">
-      <a class="brand" href="#home">
+      <a class="brand" href="#home" aria-label="Pippin’s Reading Club">
         <svg class="brand-icon" aria-hidden="true"><use href="./art.svg#feather"></use></svg>
         <span>Pippin’s <span class="brand-secondary">Reading Club</span></span>
       </a>
       <nav aria-label="Main">
-        <a href="#home" id="home-link">My week</a>
-        <a href="#review" id="review-link">Review</a>
+        <a href="#home" id="home-link" data-say>My week</a>
+        <a href="#review" id="review-link" data-say>Review</a>
       </nav>
     </div>
   </header>
   <main class="frame" id="main" tabindex="-1">
     <noscript>Turn on JavaScript to open the lessons and save your practice.</noscript>
   </main>
-  <footer class="frame footer"><span>Made for little readers in Aotearoa.</span><span>Read aloud · Talk it through · Write on paper</span></footer>
+  <p class="audio-status" id="speech-status" role="status"></p>
+  <footer class="frame footer"><span data-say>Made for little readers in Aotearoa.</span><span data-say="Read aloud. Talk it through. Write on paper.">Read aloud · Talk it through · Write on paper</span></footer>
 </body>
 </html>

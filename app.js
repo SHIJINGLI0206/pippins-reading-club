@@ -66,12 +66,12 @@ function home() {
         <span class="eyebrow">A LITTLE ADVENTURE EVERY DAY</span>
         <h1>Pippin’s<br> Reading Club</h1>
         <p>Read with a fluffy friend, talk about what you find, and make up something of your own.</p>
-        <a class="button primary" href="${next ? lessonLink(Number(next)) : '#review'}">${started ? `Keep going · Day ${next}` : next ? `Start Day ${next}` : 'Visit your feather nest'} <span aria-hidden="true">→</span></a>
+        <a class="button primary" href="${next ? lessonLink(Number(next)) : '#review'}" data-say>${started ? `Keep going · Day ${next}` : next ? `Start Day ${next}` : 'Visit your feather nest'} <span aria-hidden="true">→</span></a>
       </div>
       <figure class="hero-art"><img src="./pippin.svg" alt="Pippin the fluffy kiwi reading in a leafy nest" width="500" height="344"></figure>
     </section>
     <section class="progress-strip" aria-label="Your feather nest">
-      <div><strong>Your feather nest</strong><p>${completed} of 7 practice days finished</p></div>
+      <div><strong data-say>Your feather nest</strong><p>${completed} of 7 practice days finished</p></div>
       ${nest()}
     </section>
     <section class="week" aria-labelledby="week-title">
@@ -81,7 +81,7 @@ function home() {
           const day = index + 1;
           const state = status(day);
           return `<a class="day-card" href="${lessonLink(day)}">
-            <div class="day-art ${lesson.colour}"><span class="day-number">Day ${day}</span>${icon(lesson.art)}<span class="card-arrow" aria-hidden="true">↗</span></div>
+            <div class="day-art ${lesson.colour}"><span class="day-number">Day ${day}</span>${icon(lesson.art)}</div>
             <div class="day-info"><h3>${lesson.title}</h3><p>${lesson.kind} <span aria-hidden="true">·</span> ${lesson.focus}</p><span class="status ${state.toLowerCase()}">${state}</span></div>
           </a>`;
         }).join('')}
@@ -90,7 +90,13 @@ function home() {
 }
 
 function passage(lesson) {
-  return `<div class="passage ${lesson.text.length > 1 ? 'lines' : ''}">${lesson.text.map(line => `<p>${line}</p>`).join('')}</div>`;
+  const lines = lesson.text.length > 1 ? lesson.text : lesson.text[0].split(/(?<=[.!?])\s+/);
+  const words = lesson.text.join(' ').match(/\p{L}+(?:[’'-]\p{L}+)*/gu);
+  const uniqueWords = [...new Map(words.map(word => [word.toLowerCase(), word])).values()];
+  return `<div class="passage lines">${lines.map(line => `<p>${line}</p>`).join('')}</div>
+    <details class="help word-picker"><summary data-say>Hear a word</summary>
+      <ul class="words">${uniqueWords.map(word => `<li>${word}</li>`).join('')}</ul>
+    </details>`;
 }
 
 function lessonPage(day, step, celebrate) {
@@ -148,10 +154,10 @@ function lessonPage(day, step, celebrate) {
   }
 
   return `<div class="lesson-shell" data-day="${day}">
-    <a class="back-link" href="#home">← My week</a>
+    <a class="back-link" href="#home" data-say="My week">← My week</a>
     <header class="lesson-banner ${lesson.colour}"><div><p class="eyebrow">DAY ${day} · ${lesson.kind} · ${lesson.focus}</p><h1>${lesson.title}</h1></div>${icon(lesson.art)}</header>
     <nav aria-label="Practice steps" class="steps">
-      ${steps.map((label, index) => `<a href="${base}${stageLinks[index]}" ${index === active ? 'aria-current="step"' : ''}><span>${completed[index] ? '✓' : index + 1}</span>${label}${completed[index] ? '<span class="sr-only"> completed</span>' : ''}</a>`).join('')}
+      ${steps.map((label, index) => `<a href="${base}${stageLinks[index]}" data-say="${label}" ${index === active ? 'aria-current="step"' : ''}><span>${completed[index] ? '✓' : index + 1}</span>${label}${completed[index] ? '<span class="sr-only"> completed</span>' : ''}</a>`).join('')}
     </nav>
     <section class="panel activity" aria-labelledby="activity-title">${activity}</section>
   </div>`;
@@ -187,18 +193,18 @@ function review() {
   const completed = lessons.filter((_, index) => records[index + 1]?.done).length;
   const anyNotes = Boolean(records[1]?.support || records[7]?.support);
   return `<div class="review-shell">
-    <a class="back-link" href="#home">← My week</a>
+    <a class="back-link" href="#home" data-say="My week">← My week</a>
     <header class="review-banner"><div><p class="eyebrow">YOUR FEATHER NEST</p><h1>My practice review</h1><p>${completed} of 7 days finished. Each feather marks a day you practised.</p></div>${nest()}</header>
     <section class="review-records" aria-labelledby="record-title">
-      <div class="section-heading"><h2 id="record-title">Day by day</h2><button class="button secondary print-button" type="button" id="print-review">Print review</button></div>
+      <div class="section-heading"><h2 id="record-title">Day by day</h2><button class="button secondary print-button" type="button" id="print-review" data-say>Print review</button></div>
       ${lessons.map((lesson, index) => {
         const day = index + 1;
         const record = records[day] || {};
         const done = [record.read, record.talk, record.write].map((item, i) => item ? steps[i] : '').filter(Boolean);
         const state = status(day);
         return `<article class="review-row">
-          <div class="review-day"><div class="review-icon ${lesson.colour}">${icon(lesson.art)}</div><div><p class="eyebrow">DAY ${day}${record.started ? ` · ${recordDate(record)}` : ''}</p><h3><a href="${lessonLink(day)}">${lesson.title}</a></h3><p>${done.length ? done.join(' · ') : 'No steps recorded yet'}</p></div><span class="status ${state.toLowerCase()}">${state}</span></div>
-          <details class="help review-notes"><summary>Grown-up notes<span class="notes-indicator">${record.support ? ' · Saved' : ''}</span></summary>${notesForm(day, record)}</details>
+          <div class="review-day"><div class="review-icon ${lesson.colour}">${icon(lesson.art)}</div><div><p class="eyebrow">DAY ${day}${record.started ? ` · ${recordDate(record)}` : ''}</p><h3 data-say="Day ${day}. ${escapeText(lesson.title)}."><a href="${lessonLink(day)}">${lesson.title}</a></h3><p>${done.length ? done.join(' · ') : 'No steps recorded yet'}</p></div><span class="status ${state.toLowerCase()}" data-say>${state}</span></div>
+          <details class="help review-notes"><summary data-say="Grown-up notes">Grown-up notes<span class="notes-indicator">${record.support ? ' · Saved' : ''}</span></summary>${notesForm(day, record)}</details>
           <div class="print-notes">${record.support ? `${observations(record)}${record.note ? `<p class="print-note">${escapeText(record.note)}</p>` : ''}` : ''}</div>
         </article>`;
       }).join('')}
@@ -216,6 +222,7 @@ function review() {
 let nextCelebration = null;
 
 function render({ focus = false } = {}) {
+  window.pronunciation?.stop();
   const hash = location.hash || '#home';
   const match = /^#day-([1-7])\/(read|talk-1|talk-2|write|finish)$/.exec(hash);
   const reviewPage = hash === '#review';
@@ -235,6 +242,7 @@ function render({ focus = false } = {}) {
 
   nextCelebration = null;
   main.innerHTML = `<p id="storage-message" class="storage-message" role="status" ${storageAvailable ? 'hidden' : ''}>This browser couldn’t save your practice. Keep this tab open to use it for this visit.</p>${content}`;
+  window.pronunciation?.decorate(main);
   for (const [id, active] of [['home-link', !reviewPage], ['review-link', reviewPage]]) {
     const link = document.getElementById(id);
     if (active) link.setAttribute('aria-current', 'page');
@@ -293,6 +301,7 @@ main.addEventListener('submit', event => {
   if (day === 1 || day === 7) {
     const comparisonDay = main.querySelectorAll('.comparison-grid section')[day === 1 ? 0 : 1];
     comparisonDay.querySelector('.observations').outerHTML = observations(records[day]);
+    window.pronunciation?.decorate(comparisonDay);
     main.querySelector('.compare-hint').hidden = true;
   }
 });
@@ -302,4 +311,6 @@ document.querySelector('#skip').addEventListener('click', event => {
   main.focus();
 });
 window.addEventListener('hashchange', () => render({ focus: true }));
+window.pronunciation?.decorate(document.querySelector('.masthead'));
+window.pronunciation?.decorate(document.querySelector('.footer'));
 render();
